@@ -195,7 +195,7 @@ section { position: relative; padding: clamp(5rem, 12vw, 11rem) var(--gutter); }
 .hero-top { display: flex; justify-content: space-between; gap: 1rem; }
 .hero-title {
   margin: 0; align-self: center; font-family: var(--display); font-weight: 900; letter-spacing: -.045em; line-height: .82;
-  font-size: clamp(4.6rem, 19vw, 19rem); perspective: 1200px;
+  font-size: min(clamp(4rem, 12.5vw, 12rem), 26vh); perspective: 1200px;
 }
 .hero-title .line { display: block; overflow: hidden; padding: .04em 0; }
 .hero-title .line:nth-child(2) { padding-left: .18em; }
