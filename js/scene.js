@@ -5,6 +5,7 @@
    orbit rings with a glowing satellite, and a soft particle
    field. Reacts to the pointer (parallax + agitation) and to
    scroll (lifts, shrinks and rolls away as the hero leaves).
+   Lives on a fixed canvas and travels between sections.
    Purple on near-black.
    ========================================================= */
 /* Classic (non-module) script so it also runs from a file:// double-click. */
@@ -69,6 +70,7 @@ if (canvas && THREE && !reduce) {
     uDeep: { value: DEEP },
     uPurple: { value: PURPLE },
     uLilac: { value: LILAC },
+    uOpacity: { value: 1 },
   };
 
   /* Analytic normals: displace two tangent neighbours and cross them. */
@@ -98,7 +100,7 @@ if (canvas && THREE && !reduce) {
   `;
 
   const FRAG = /* glsl */`
-    uniform vec3 uDeep, uPurple, uLilac; uniform float uTime;
+    uniform vec3 uDeep, uPurple, uLilac; uniform float uTime, uOpacity;
     varying vec3 vN; varying vec3 vP; varying float vD;
     void main(){
       vec3 N = normalize(vN); vec3 V = normalize(-vP);
@@ -112,16 +114,16 @@ if (canvas && THREE && !reduce) {
       vec3 col = base * (0.14 + d1 * 0.62 + d2) + uLilac * fres * 0.95 + vec3(spec) * 0.45;
       // faint iridescent bands along the displacement
       col += uLilac * 0.08 * (0.5 + 0.5 * sin(vD * 40.0 + uTime * 2.0)) * fres;
-      gl_FragColor = vec4(col * 0.9, 0.95);
+      gl_FragColor = vec4(col * 0.9, 0.95 * uOpacity);
     }
   `;
 
   const WIRE_FRAG = /* glsl */`
-    uniform vec3 uLilac; varying vec3 vN; varying vec3 vP; varying float vD;
+    uniform vec3 uLilac; uniform float uOpacity; varying vec3 vN; varying vec3 vP; varying float vD;
     void main(){
       vec3 N = normalize(vN); vec3 V = normalize(-vP);
       float fres = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.6);
-      gl_FragColor = vec4(uLilac, 0.05 + fres * 0.35);
+      gl_FragColor = vec4(uLilac, (0.05 + fres * 0.35) * uOpacity);
     }
   `;
 
@@ -170,6 +172,7 @@ if (canvas && THREE && !reduce) {
       new THREE.TorusGeometry(s.r, 0.009, 6, 260),
       new THREE.MeshBasicMaterial({ color: PURPLE, transparent: true, opacity: s.op, blending: THREE.AdditiveBlending, depthWrite: false })
     );
+    ring.userData.op = s.op;
     pivot.add(ring);
     // a brighter arc segment that reads as motion
     const arc = new THREE.Mesh(
@@ -210,7 +213,7 @@ if (canvas && THREE && !reduce) {
   pGeo.setAttribute("aSeed", new THREE.BufferAttribute(pSeed, 1));
   pGeo.setAttribute("aSize", new THREE.BufferAttribute(pSize, 1));
   const pMat = new THREE.ShaderMaterial({
-    uniforms: { uTime: uniforms.uTime, uPx: { value: renderer.getPixelRatio() }, uPurple: { value: PURPLE }, uLilac: { value: LILAC } },
+    uniforms: { uTime: uniforms.uTime, uPx: { value: renderer.getPixelRatio() }, uPurple: { value: PURPLE }, uLilac: { value: LILAC }, uOpacity: uniforms.uOpacity },
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: /* glsl */`
       attribute float aSeed; attribute float aSize; uniform float uTime, uPx;
@@ -226,25 +229,27 @@ if (canvas && THREE && !reduce) {
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: /* glsl */`
-      uniform vec3 uPurple, uLilac; varying float vTw; varying float vMix;
+      uniform vec3 uPurple, uLilac; uniform float uOpacity; varying float vTw; varying float vMix;
       void main(){
         vec2 c = gl_PointCoord - 0.5; float d = length(c);
         float a = smoothstep(0.5, 0.0, d) * vTw;
         a *= a;
-        gl_FragColor = vec4(mix(uPurple, uLilac, vMix), a * 0.9);
+        gl_FragColor = vec4(mix(uPurple, uLilac, vMix), a * 0.9 * (0.35 + 0.65 * uOpacity));
       }`,
   });
   const points = new THREE.Points(pGeo, pMat);
   scene.add(points);
 
-  /* ---------- Resize ---------- */
-  let baseZ = 7.4;
+  /* ---------- Resize (fixed, full-viewport canvas) ---------- */
+  let baseZ = 7.4, visW = 5, visH = 5;
   function resize() {
-    const r = canvas.parentElement.getBoundingClientRect();
-    renderer.setSize(r.width, r.height, false);
-    camera.aspect = r.width / r.height;
+    const w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
     baseZ = Math.max(7.4, 5.6 / camera.aspect);
     camera.updateProjectionMatrix();
+    visH = 2 * baseZ * Math.tan((camera.fov * Math.PI) / 360);
+    visW = visH * camera.aspect;
   }
   resize();
   window.addEventListener("resize", resize);
@@ -261,18 +266,51 @@ if (canvas && THREE && !reduce) {
     lastX = e.clientX; lastY = e.clientY; lastT = now;
   });
 
+  /* ---------- Waypoints: where the object sits for each section ----------
+     x/y are fractions of the visible viewport (-0.5..0.5), s is scale, o opacity,
+     r is extra roll. The object eases between the waypoint of the section
+     nearest the viewport centre and its neighbour. */
+  const WAY = [
+    { id: "hero",       d: { x: 0.27, y: 0.08, s: 1.0,  o: 1,   r: 0 },    m: { x: 0, y: 0.22, s: 0.62, o: 1, r: 0 } },
+    { id: "manifesto",  d: { x: -0.4, y: -0.28, s: 0.42, o: 0.32, r: 1.2 }, m: { x: 0.3, y: -0.3, s: 0.35, o: 0.4, r: 1 } },
+    { id: "about",      d: { x: -0.3, y: 0.05, s: 0.75, o: 0.9, r: 2.2 },   m: { x: 0.35, y: 0.3, s: 0.35, o: 0.5, r: 2 } },
+    { id: "services",   d: { x: 0.42, y: 0.34, s: 0.3,  o: 0.35, r: 3 },    m: { x: 0.4, y: -0.38, s: 0.22, o: 0.3, r: 3 } },
+    { id: "experience", d: { x: 0.36, y: -0.1, s: 0.45, o: 0.5, r: 3.8 },   m: { x: 0.4, y: -0.38, s: 0.25, o: 0.35, r: 3.6 } },
+    { id: "work",       d: { x: 0.44, y: 0.4, s: 0.0,  o: 0,   r: 4.5 },    m: { x: 0, y: 0.5, s: 0, o: 0, r: 4.5 } },
+    { id: "contact",    d: { x: 0.22, y: -0.02, s: 1.05, o: 0.85, r: 6 },     m: { x: 0.3, y: 0.3, s: 0.55, o: 0.7, r: 6 } },
+  ].map((w) => ({ ...w, el: document.getElementById(w.id) })).filter((w) => w.el);
+
+  const state = { x: 0, y: 0, s: 1, o: 1, r: 0 };
+  const smooth = (a, b, t) => a + (b - a) * t;
+  const ease = (t) => t * t * (3 - 2 * t);
+  function targetFor(scrollY) {
+    const vh = window.innerHeight;
+    const centre = scrollY + vh * 0.5;
+    const key = isMobile ? "m" : "d";
+    // section centres in document space
+    const pts = WAY.map((w) => ({ c: w.el.offsetTop + w.el.offsetHeight * 0.5, v: w[key] }));
+    if (centre <= pts[0].c) return pts[0].v;
+    for (let i = 0; i < pts.length - 1; i++) {
+      if (centre >= pts[i].c && centre <= pts[i + 1].c) {
+        const t = ease((centre - pts[i].c) / Math.max(pts[i + 1].c - pts[i].c, 1));
+        const a = pts[i].v, b = pts[i + 1].v;
+        return { x: smooth(a.x, b.x, t), y: smooth(a.y, b.y, t), s: smooth(a.s, b.s, t), o: smooth(a.o, b.o, t), r: smooth(a.r, b.r, t) };
+      }
+    }
+    return pts[pts.length - 1].v;
+  }
+
   /* ---------- Animate ---------- */
   const clock = new THREE.Clock();
   let running = true;
-  const hero = document.getElementById("home");
-  let heroH = hero ? hero.offsetHeight : window.innerHeight;
-  window.addEventListener("resize", () => { heroH = hero ? hero.offsetHeight : window.innerHeight; });
   document.addEventListener("visibilitychange", () => { running = !document.hidden; if (running) tick(); });
 
   function tick() {
     if (!running) return;
-    const p = Math.min(Math.max(window.scrollY / heroH, 0), 1.2);
-    if (p >= 1.15) { requestAnimationFrame(tick); return; } // offscreen: idle cheaply
+    const tg = targetFor(window.scrollY);
+    state.x += (tg.x - state.x) * 0.06; state.y += (tg.y - state.y) * 0.06;
+    state.s += (tg.s - state.s) * 0.06; state.o += (tg.o - state.o) * 0.06; state.r += (tg.r - state.r) * 0.06;
+    if (state.s < 0.02 && state.o < 0.02) { requestAnimationFrame(tick); renderer.clear(); return; } // hidden: idle cheaply
 
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
@@ -299,16 +337,17 @@ if (canvas && THREE && !reduce) {
 
     points.rotation.y = t * 0.02 + cur.x * 0.08;
     points.rotation.x = cur.y * 0.06;
+    points.position.set(state.x * visW * 0.5, state.y * visH * 0.5, 0);
+    points.scale.setScalar(0.6 + state.s * 0.5);
 
-    // pointer parallax on the whole group; scroll lifts, shrinks and rolls it away
-    const s = 1 - p * 0.42;
-    group.scale.setScalar(s);
-    group.position.y = p * 2.2;
-    group.position.x = cur.x * 0.18;
-    group.rotation.y = cur.x * 0.42 + p * 1.1;
-    group.rotation.x = cur.y * 0.3 - p * 0.5;
+    group.scale.setScalar(Math.max(state.s, 0.001));
+    group.position.set(state.x * visW + cur.x * 0.18, state.y * visH, 0);
+    group.rotation.y = cur.x * 0.42 + state.r;
+    group.rotation.x = cur.y * 0.3 + state.r * 0.35;
     camera.position.z = baseZ - Math.abs(cur.x) * 0.25;
-    glow.material.opacity = 1 - p * 0.9;
+    glow.material.opacity = state.o;
+    uniforms.uOpacity.value = state.o;
+    rings.forEach((rg) => { rg.ring.material.opacity = rg.ring.userData.op * state.o; rg.arc.material.opacity = (rg.ring.userData.op + 0.25) * state.o; });
     pMat.uniforms.uPx.value = renderer.getPixelRatio();
 
     renderer.render(scene, camera);

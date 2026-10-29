@@ -1,537 +1,389 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ahmed Fikry — Multidisciplinary Designer</title>
-  <meta name="description" content="Ahmed Fikry — multidisciplinary designer. Motion graphics, branding, UI/UX and visual identity that brands remember." />
+  <title>Ahmed Fikry — Designer of brands, motion and interfaces</title>
+  <meta name="description" content="Ahmed Fikry is a multidisciplinary designer in Cairo. Brand identity, motion graphics and UI/UX that people remember." />
   <meta name="author" content="Ahmed Fikry" />
-  <meta property="og:title" content="Ahmed Fikry — Multidisciplinary Designer" />
-  <meta property="og:description" content="Motion graphics, branding, UI/UX and visual identity." />
+  <meta property="og:title" content="Ahmed Fikry — Designer" />
+  <meta property="og:description" content="Brand identity, motion graphics and UI/UX that people remember." />
   <meta name="theme-color" content="#08070d" />
 
-  <!-- Fonts: Clash Display + General Sans (Fontshare) -->
+  <!-- Fonts: Cabinet Grotesk (display) · Satoshi (text) · Gambetta (italic accent) · JetBrains Mono (labels) -->
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800,900&f[]=satoshi@400,500,700&f[]=gambetta@400,401&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind Play CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ["General Sans", "sans-serif"],
-            display: ["Clash Display", "sans-serif"],
-          },
-        },
-      },
-    };
-  </script>
-
-  <!-- Three.js (classic build, works without a server) -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
-
-  <!-- GSAP -->
+  <!-- GSAP + Lenis + Three.js (classic builds; the site also runs from a file:// double-click) -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-
-  <!-- Lenis smooth scroll -->
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
-<body class="antialiased">
-  <!-- Backgrounds: WebGL aurora, CSS mesh fallback, film grain -->
+<body>
+  <!-- Layers: aurora shader → travelling 3D object → grain -->
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
-  <div class="mesh-bg"></div>
-  <div class="noise"></div>
+  <div class="mesh-bg" aria-hidden="true"></div>
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
 
-  <!-- Scroll progress -->
   <div id="progress" aria-hidden="true"></div>
-
-  <!-- Custom cursor -->
-  <div class="cursor-dot"></div>
-  <div class="cursor-ring"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
   <div id="cursor-label" aria-hidden="true"></div>
 
   <!-- Preloader -->
-  <div id="preloader">
-    <div class="text-center">
-      <div class="pre-word grad-text">FIKRY</div>
+  <div id="preloader" aria-hidden="true">
+    <div class="pre-grid">
+      <div class="pre-word">Fikry</div>
+      <div class="pre-meta mono">
+        <span>Portfolio</span><span>Cairo, EG</span><span id="pre-count">000</span>
+      </div>
       <div class="pre-bar"><span></span></div>
-      <div class="pre-count">000 %</div>
     </div>
   </div>
 
   <!-- ================= NAV ================= -->
-  <nav id="nav" class="fixed top-0 inset-x-0 z-50">
-    <div class="max-w-7xl mx-auto px-5 lg:px-8">
-      <div class="glass rounded-2xl mt-4 px-5 py-3 flex items-center justify-between">
-        <a href="#home" class="font-display font-bold text-xl tracking-tight">
-          Fikry<span class="text-purple-400">.</span>
-        </a>
+  <header id="nav">
+    <a href="#top" class="brand" aria-label="Home">Fikry<span>.</span></a>
+    <div class="nav-meta mono">
+      <span class="dot-live"></span><span>Available for work</span>
+      <span class="sep">/</span>
+      <span>Cairo</span><span id="clock">--:--</span>
+    </div>
+    <button id="menu-btn" class="menu-btn mono" aria-expanded="false" aria-controls="menu">
+      <span class="menu-btn__t">Menu</span><span class="menu-btn__t">Close</span>
+      <span class="menu-btn__bars"><i></i><i></i></span>
+    </button>
+  </header>
 
-        <ul class="hidden lg:flex items-center gap-7">
-          <li><a href="#home" class="nav-link active">Home</a></li>
-          <li><a href="#about" class="nav-link">About</a></li>
-          <li><a href="#services" class="nav-link">Services</a></li>
-          <li><a href="#experience" class="nav-link">Experience</a></li>
-          <li><a href="#work" class="nav-link">Work</a></li>
-          <li><a href="#contact" class="nav-link">Contact</a></li>
-        </ul>
-
-        <div class="flex items-center gap-3">
-          <a href="#contact" class="btn-primary magnetic hidden sm:inline-flex text-sm">Let's talk</a>
-          <button id="burger" class="lg:hidden w-10 h-10 grid place-items-center rounded-xl glass" aria-label="Menu">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
-          </button>
-        </div>
-      </div>
+  <!-- Overlay menu -->
+  <nav id="menu" aria-hidden="true">
+    <ol class="menu-list">
+      <li><a href="#top" data-i="01">Home</a></li>
+      <li><a href="#about" data-i="02">About</a></li>
+      <li><a href="#services" data-i="03">Services</a></li>
+      <li><a href="#experience" data-i="04">Experience</a></li>
+      <li><a href="#work" data-i="05">Work</a></li>
+      <li><a href="#contact" data-i="06">Contact</a></li>
+    </ol>
+    <div class="menu-foot mono">
+      <a href="mailto:ahmedfikry277@gmail.com">ahmedfikry277@gmail.com</a>
+      <div class="menu-social" id="menu-social"></div>
     </div>
   </nav>
 
-  <!-- Mobile menu -->
-  <div id="mobile-menu" class="fixed inset-y-0 right-0 w-4/5 max-w-sm z-40 glass translate-x-full transition-transform duration-500 lg:hidden flex flex-col justify-center px-10 gap-6">
-    <a href="#home" class="font-display text-3xl">Home</a>
-    <a href="#about" class="font-display text-3xl">About</a>
-    <a href="#services" class="font-display text-3xl">Services</a>
-    <a href="#experience" class="font-display text-3xl">Experience</a>
-    <a href="#work" class="font-display text-3xl">Work</a>
-    <a href="#contact" class="font-display text-3xl text-purple-400">Contact</a>
-    <div class="flex gap-3 mt-6" id="mobile-social"></div>
-  </div>
+  <main id="top">
 
-  <!-- ================= HERO ================= -->
-  <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-28 pb-16">
-    <!-- 3D canvas -->
-    <div class="absolute inset-0 pointer-events-none">
-      <canvas id="hero-canvas" class="w-full h-full block"></canvas>
-    </div>
+    <!-- ================= HERO ================= -->
+    <section id="hero" class="hero">
+      <div class="hero-top mono">
+        <span>Portfolio — <span id="year-top">2026</span></span>
+        <span class="hide-sm">Multidisciplinary designer</span>
+        <span>Cairo, EG · 30.04°N</span>
+      </div>
 
-    <!-- Content -->
-    <div class="hero-content relative z-10 text-center px-5 max-w-4xl mx-auto">
-      <div class="hero-kicker kicker justify-center mb-6">Cairo, Egypt — Available for work</div>
-
-      <h1 class="font-display font-bold leading-[0.95] tracking-tight text-[clamp(3rem,11vw,8rem)] hero-line">
-        <span class="word inline-block grad-text">Ahmed</span>
-        <span class="word inline-block stroke-text">Fikry</span>
+      <h1 class="hero-title" aria-label="Ahmed Fikry">
+        <span class="line"><span class="word" data-split>Ahmed</span></span>
+        <span class="line line--outline"><span class="word" data-split>Fikry</span></span>
       </h1>
 
-      <p class="hero-sub mt-6 text-xl md:text-2xl font-medium">
-        I'm <span id="typewriter" class="text-purple-400 font-semibold" data-words='["a Graphic Designer","a UI/UX Designer","an Art Director","a Motion Designer","a Video Editor","a Freelancer"]'></span><span class="tw-caret"></span>
-      </p>
-
-      <p class="hero-sub muted max-w-xl mx-auto mt-5 text-[15px] leading-relaxed">
-        A multidisciplinary designer crafting brands, motion and interfaces that feel
-        <span class="text-purple-300">clean</span>, <span class="text-purple-300">bold</span> and
-        <span class="text-purple-300">unforgettable</span>. 4+ years turning ideas into design that works.
-      </p>
-
-      <div class="hero-cta mt-9 flex flex-wrap items-center justify-center gap-4">
-        <a href="#contact" class="btn-primary magnetic">Hire me
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      <div class="hero-bottom">
+        <a href="#about" class="badge" aria-label="Scroll to explore">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <defs><path id="circ" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0" /></defs>
+            <text><textPath href="#circ">scroll to explore · scroll to explore · </textPath></text>
+          </svg>
+          <span class="badge__arrow">↓</span>
         </a>
-        <a href="Ahmed-Fikry-CV.pdf" download class="btn-ghost magnetic" data-cursor="PDF">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Download CV
-        </a>
-      </div>
-    </div>
 
-    <a href="#about" class="hero-scroll absolute bottom-7 left-1/2 -translate-x-1/2 text-xs muted flex flex-col items-center gap-2 tracking-widest uppercase">
-      Scroll
-      <span class="block w-px h-10 bg-gradient-to-b from-purple-500 to-transparent animate-pulse"></span>
-    </a>
-  </section>
-
-  <!-- ================= MARQUEE ================= -->
-  <div class="py-6 border-y border-white/5 overflow-hidden">
-    <div class="marquee">
-      <div class="marquee__track">
-        <span class="marquee__item">Motion Graphics <span class="dot"></span></span>
-        <span class="marquee__item stroke-text">Branding <span class="dot"></span></span>
-        <span class="marquee__item">UI / UX <span class="dot"></span></span>
-        <span class="marquee__item stroke-text">Art Direction <span class="dot"></span></span>
-        <span class="marquee__item">Visual Identity <span class="dot"></span></span>
-        <span class="marquee__item stroke-text">Video Editing <span class="dot"></span></span>
-        <!-- duplicate for seamless loop -->
-        <span class="marquee__item">Motion Graphics <span class="dot"></span></span>
-        <span class="marquee__item stroke-text">Branding <span class="dot"></span></span>
-        <span class="marquee__item">UI / UX <span class="dot"></span></span>
-        <span class="marquee__item stroke-text">Art Direction <span class="dot"></span></span>
-        <span class="marquee__item">Visual Identity <span class="dot"></span></span>
-        <span class="marquee__item stroke-text">Video Editing <span class="dot"></span></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= ABOUT ================= -->
-  <section id="about" class="relative py-24 lg:py-32">
-    <div class="max-w-7xl mx-auto px-5 lg:px-8">
-      <div class="grid lg:grid-cols-12 gap-12 items-center">
-        <!-- Portrait -->
-        <div class="lg:col-span-5 reveal">
-          <div class="portrait tilt relative mx-auto max-w-sm" data-tilt="10">
-            <div class="portrait__ring absolute -inset-3 rounded-[2rem] border border-white/10 animate-[spin_28s_linear_infinite]"></div>
-            <div class="relative rounded-[1.75rem] overflow-hidden panel aspect-[4/5] grid place-items-center">
-              <!-- Personal photo; falls back to the AF monogram if missing -->
-              <img src="assets/images/personal%20image.jpg" alt="Ahmed Fikry"
-                   class="absolute inset-0 w-full h-full object-cover"
-                   onerror="this.style.display='none';this.nextElementSibling.style.display='grid';" />
-              <div class="absolute inset-0 hidden place-items-center bg-gradient-to-br from-purple-500/25 via-transparent to-purple-500/5">
-                <span class="font-display font-bold text-[7rem] grad-text">AF</span>
-              </div>
-            </div>
-            <div class="portrait__badge panel absolute -bottom-6 -right-4 px-5 py-4 rounded-2xl text-center w-40" data-parallax="-18">
-              <div class="text-3xl font-display font-bold text-purple-400"><span class="counter" data-target="4" data-suffix="+">0</span></div>
-              <div class="text-xs muted mt-1">Years crafting<br />design</div>
-            </div>
+        <div class="hero-copy">
+          <p class="lead">
+            I'm <span id="typewriter" data-words='["a brand designer","a motion designer","a UI/UX designer","an art director","a video editor"]'></span><span class="tw-caret"></span>
+          </p>
+          <p class="muted">
+            Four years of turning ideas into identities, motion and interfaces that feel
+            <em class="accent">clean</em>, <em class="accent">bold</em> and <em class="accent">unforgettable</em>.
+          </p>
+          <div class="hero-cta">
+            <a href="#contact" class="btn btn--solid magnetic">Start a project <i>→</i></a>
+            <a href="Ahmed-Fikry-CV.pdf" download class="btn btn--line magnetic" data-cursor="PDF">Download CV</a>
           </div>
         </div>
+      </div>
 
-        <!-- Bio -->
-        <div class="lg:col-span-7 reveal">
-          <div class="kicker mb-5">About me</div>
-          <h2 class="reveal-head font-display font-semibold text-3xl md:text-4xl leading-tight grad-text" style="background-size:200% 100%;">
-            I'm a passionate, multidisciplinary designer.
-          </h2>
-          <p class="muted mt-6 leading-relaxed text-[15px]">
-            Based in Cairo, Egypt, I've spent 4+ years helping brands look and feel unmistakable — across
-            <span class="text-purple-300">motion graphics</span>, <span class="text-purple-300">branding</span> and
-            <span class="text-purple-300">UI/UX design</span>. I care about the details that make work feel effortless.
+      <div class="rail mono" aria-hidden="true">
+        <span>01 — Intro</span><span class="rail__line"></span>
+      </div>
+    </section>
+
+    <!-- ================= RIBBON ================= -->
+    <div class="ribbon" aria-hidden="true">
+      <div class="marquee">
+        <div class="marquee__track">
+          <span>Brand identity</span><i></i><span>Motion graphics</span><i></i><span>UI / UX</span><i></i><span>Art direction</span><i></i><span>Video editing</span><i></i><span>Visual systems</span><i></i>
+          <span>Brand identity</span><i></i><span>Motion graphics</span><i></i><span>UI / UX</span><i></i><span>Art direction</span><i></i><span>Video editing</span><i></i><span>Visual systems</span><i></i>
+        </div>
+      </div>
+      <div class="marquee marquee--rev">
+        <div class="marquee__track">
+          <span class="outline">Cairo</span><i></i><span class="outline">Egypt</span><i></i><span class="outline">Worldwide</span><i></i><span class="outline">Since 2022</span><i></i><span class="outline">50+ projects</span><i></i><span class="outline">Available</span><i></i>
+          <span class="outline">Cairo</span><i></i><span class="outline">Egypt</span><i></i><span class="outline">Worldwide</span><i></i><span class="outline">Since 2022</span><i></i><span class="outline">50+ projects</span><i></i><span class="outline">Available</span><i></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MANIFESTO (pinned, scrubbed) ================= -->
+    <section id="manifesto" class="manifesto">
+      <p class="manifesto__text" data-words>
+        I design <em>brands</em> people recognise, <em>motion</em> people remember, and <em>interfaces</em> people don't have to think about. Clear thinking first. Then craft, down to the last pixel.
+      </p>
+      <div class="rail mono" aria-hidden="true"><span>02 — Manifesto</span><span class="rail__line"></span></div>
+    </section>
+
+    <!-- ================= ABOUT ================= -->
+    <section id="about" class="about">
+      <div class="section-head">
+        <span class="mono eyebrow">02 / About</span>
+        <h2 class="h2">A designer who <em class="serif">thinks</em> before he draws.</h2>
+      </div>
+
+      <div class="about-grid">
+        <figure class="portrait reveal">
+          <div class="portrait__frame">
+            <img src="assets/images/personal%20image.jpg" alt="Ahmed Fikry" data-parallax-img />
+          </div>
+          <figcaption class="mono">Ahmed Fikry · Cairo, 2026</figcaption>
+          <div class="portrait__tag mono">4+ yrs</div>
+        </figure>
+
+        <div class="about-copy">
+          <p class="reveal">
+            Based in Cairo, I've spent four years helping brands look and feel unmistakable across
+            <strong>motion graphics</strong>, <strong>brand identity</strong> and <strong>UI/UX</strong>.
+            I care about the details that make work feel effortless.
           </p>
-          <p class="muted mt-4 leading-relaxed text-[15px]">
-            From a single logo to a full product interface, I blend strong visual craft with clear thinking. I've led rebrands,
-            designed apps used by real people, and animated stories that actually get noticed.
+          <p class="reveal muted">
+            From a single logo to a full product interface, I blend strong visual craft with clear thinking. I've led
+            rebrands, designed apps used by real people, and animated stories that get noticed.
           </p>
 
-          <!-- stat grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-9" data-stagger>
-            <div class="panel p-4 rounded-2xl"><div class="text-2xl font-display font-bold text-purple-400"><span class="counter" data-target="50" data-suffix="+">0</span></div><div class="text-xs muted mt-1">Projects</div></div>
-            <div class="panel p-4 rounded-2xl"><div class="text-2xl font-display font-bold text-purple-400"><span class="counter" data-target="4" data-suffix="+">0</span></div><div class="text-xs muted mt-1">Years</div></div>
-            <div class="panel p-4 rounded-2xl"><div class="text-2xl font-display font-bold text-purple-400"><span class="counter" data-target="10" data-suffix="+">0</span></div><div class="text-xs muted mt-1">Happy clients</div></div>
-            <div class="panel p-4 rounded-2xl"><div class="text-2xl font-display font-bold text-purple-400"><span class="counter" data-target="100" data-suffix="%">0</span></div><div class="text-xs muted mt-1">On-time</div></div>
-          </div>
+          <dl class="stats reveal">
+            <div><dt class="mono">Projects</dt><dd><span class="counter" data-target="50">0</span>+</dd></div>
+            <div><dt class="mono">Years</dt><dd><span class="counter" data-target="4">0</span>+</dd></div>
+            <div><dt class="mono">Clients</dt><dd><span class="counter" data-target="10">0</span>+</dd></div>
+            <div><dt class="mono">On time</dt><dd><span class="counter" data-target="100">0</span>%</dd></div>
+          </dl>
 
-          <div class="mt-9 flex flex-wrap gap-4">
-            <a href="Ahmed-Fikry-CV.pdf" download class="btn-primary magnetic">Download CV</a>
-            <a href="#work" class="btn-ghost magnetic">See my work</a>
-          </div>
+          <ul class="tools mono reveal" aria-label="Tools">
+            <li>After Effects</li><li>Illustrator</li><li>Photoshop</li><li>Figma</li><li>Premiere</li><li>Blender</li>
+          </ul>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ================= SERVICES ================= -->
-  <section id="services" class="relative py-24 lg:py-32 bg-white/[0.015]">
-    <div class="ghost" data-dir="left" aria-hidden="true">SERVICES</div>
-    <div class="max-w-7xl mx-auto px-5 lg:px-8">
-      <div class="text-center max-w-2xl mx-auto reveal">
-        <div class="kicker justify-center mb-5">What I do</div>
-        <h2 class="reveal-head font-display font-semibold text-3xl md:text-5xl grad-text" style="background-size:200% 100%;">Services I offer</h2>
-        <p class="muted mt-5 text-[15px]">From a single logo to a full brand world — here's how I can help your project shine.</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-14" data-stagger>
-        <!-- card -->
-        <div class="tilt panel service-card p-8 rounded-2xl">
-          <div class="tilt__inner">
-            <span class="num">01</span>
-            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-            </div>
-            <h3 class="font-display text-xl font-semibold">UI / UX Design</h3>
-            <p class="muted mt-3 text-sm leading-relaxed">Interfaces that captivate and convert — research, wireframes, prototypes and polished, easy-to-use screens.</p>
-          </div>
+    <!-- ================= SERVICES (pinned horizontal scroll) ================= -->
+    <section id="services" class="services">
+      <div class="services__pin">
+        <div class="services__head">
+          <span class="mono eyebrow">03 / Services</span>
+          <h2 class="h2">What I can <em class="serif">do</em> for you</h2>
+          <span class="mono services__hint hide-sm">Scroll →</span>
         </div>
-        <div class="tilt panel service-card p-8 rounded-2xl">
-          <div class="tilt__inner">
-            <span class="num">02</span>
-            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
-            </div>
-            <h3 class="font-display text-xl font-semibold">Brand Identity</h3>
-            <p class="muted mt-3 text-sm leading-relaxed">Logos, color systems, typography and guidelines — full art direction that makes a brand unmistakable.</p>
-          </div>
-        </div>
-        <div class="tilt panel service-card p-8 rounded-2xl">
-          <div class="tilt__inner">
-            <span class="num">03</span>
-            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </div>
-            <h3 class="font-display text-xl font-semibold">Motion Graphics</h3>
-            <p class="muted mt-3 text-sm leading-relaxed">Animated stories that move your message — explainers, social motion and brand intros built to get reach.</p>
-          </div>
-        </div>
-        <div class="tilt panel service-card p-8 rounded-2xl">
-          <div class="tilt__inner">
-            <span class="num">04</span>
-            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5zM2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
-            </div>
-            <h3 class="font-display text-xl font-semibold">Graphic Design</h3>
-            <p class="muted mt-3 text-sm leading-relaxed">Posters, social posts, decks and print — striking visuals and creative storytelling, on-brand every time.</p>
-          </div>
-        </div>
-        <div class="tilt panel service-card p-8 rounded-2xl">
-          <div class="tilt__inner">
-            <span class="num">05</span>
-            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-            </div>
-            <h3 class="font-display text-xl font-semibold">Video Editing</h3>
-            <p class="muted mt-3 text-sm leading-relaxed">Footage, sound and effects woven into compelling cuts — demo videos, reels and brand films that land.</p>
-          </div>
-        </div>
-        <div class="tilt panel service-card p-8 rounded-2xl">
-          <div class="tilt__inner">
-            <span class="num">06</span>
-            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            </div>
-            <h3 class="font-display text-xl font-semibold">Photography</h3>
-            <p class="muted mt-3 text-sm leading-relaxed">A keen eye for detail and storytelling — turning moments into timeless, usable visual content.</p>
-          </div>
+        <div class="services__track">
+          <article class="svc"><span class="svc__n">01</span>
+            <h3>Brand Identity</h3>
+            <p>Logos, colour systems, typography and guidelines. Full art direction that makes a brand unmistakable.</p>
+            <ul class="mono"><li>Logo</li><li>Visual system</li><li>Guidelines</li></ul>
+          </article>
+          <article class="svc"><span class="svc__n">02</span>
+            <h3>Motion Graphics</h3>
+            <p>Animated stories that move your message: explainers, social motion and brand intros built to get reach.</p>
+            <ul class="mono"><li>Explainers</li><li>Social</li><li>Intros</li></ul>
+          </article>
+          <article class="svc"><span class="svc__n">03</span>
+            <h3>UI / UX Design</h3>
+            <p>Interfaces that captivate and convert: research, wireframes, prototypes and polished, easy-to-use screens.</p>
+            <ul class="mono"><li>Research</li><li>Prototype</li><li>UI</li></ul>
+          </article>
+          <article class="svc"><span class="svc__n">04</span>
+            <h3>Graphic Design</h3>
+            <p>Posters, social posts, decks and print. Striking visuals and creative storytelling, on brand every time.</p>
+            <ul class="mono"><li>Print</li><li>Social</li><li>Decks</li></ul>
+          </article>
+          <article class="svc"><span class="svc__n">05</span>
+            <h3>Video Editing</h3>
+            <p>Footage, sound and effects woven into compelling cuts: demo videos, reels and brand films that land.</p>
+            <ul class="mono"><li>Reels</li><li>Demos</li><li>Films</li></ul>
+          </article>
+          <article class="svc svc--cta"><span class="svc__n">06</span>
+            <h3>Something else?</h3>
+            <p>Photography, pitch decks, event visuals. If it needs to look right, I can help.</p>
+            <a href="#contact" class="btn btn--solid magnetic">Let's talk <i>→</i></a>
+          </article>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ================= EXPERIENCE ================= -->
-  <section id="experience" class="relative py-24 lg:py-32">
-    <div class="ghost" data-dir="right" aria-hidden="true">CAREER</div>
-    <div class="max-w-5xl mx-auto px-5 lg:px-8">
-      <div class="text-center max-w-2xl mx-auto reveal">
-        <div class="kicker justify-center mb-5">Career path</div>
-        <h2 class="reveal-head font-display font-semibold text-3xl md:text-5xl grad-text" style="background-size:200% 100%;">Work experience</h2>
+    <!-- ================= EXPERIENCE ================= -->
+    <section id="experience" class="exp">
+      <div class="section-head">
+        <span class="mono eyebrow">04 / Experience</span>
+        <h2 class="h2">Where the work <em class="serif">happened</em></h2>
+      </div>
+      <ol class="ledger">
+        <li class="ledger__row reveal">
+          <span class="ledger__when mono">2024 — Now</span>
+          <div class="ledger__what">
+            <h3>Multimedia Designer</h3>
+            <span class="ledger__co">Boyot · Garden City, Cairo</span>
+          </div>
+          <p class="ledger__desc muted">15+ animated videos and 20+ marketing and demo edits that tripled social engagement. 50+ branded visuals that grew impressions by 40%.</p>
+        </li>
+        <li class="ledger__row reveal">
+          <span class="ledger__when mono">2023 — Now</span>
+          <div class="ledger__what">
+            <h3>Co-Founder &amp; Product Designer</h3>
+            <span class="ledger__co">Paycoo · Digital wallet</span>
+          </div>
+          <p class="ledger__desc muted">Led product design, UX strategy and the full visual identity from scratch. Beta retention 60% above competitors.</p>
+        </li>
+        <li class="ledger__row reveal">
+          <span class="ledger__when mono">2022 — 2025</span>
+          <div class="ledger__what">
+            <h3>Multimedia &amp; UI/UX Designer</h3>
+            <span class="ledger__co">CodeX Solutions</span>
+          </div>
+          <p class="ledger__desc muted">Full company rebrand across 6+ platforms, UI/UX for 3 websites (+32% session time) and motion campaigns that grew reach by 122%.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ================= WORK ================= -->
+    <section id="work" class="work">
+      <div class="section-head">
+        <span class="mono eyebrow">05 / Selected work</span>
+        <h2 class="h2">Six projects, <em class="serif">closely</em></h2>
       </div>
 
-      <div class="tl mt-16">
-        <div class="tl__line"><span></span></div>
+      <!-- Featured: stacking cards (injected) -->
+      <div class="stack" id="stack"></div>
 
-        <!-- (Commented out: non-design IT/Network Security internship)
-        <div class="tl__item reveal md:grid md:grid-cols-2 md:gap-12 mb-14">
-          <div class="md:text-right md:pr-12">
-            <span class="tl__node"></span>
-            <span class="tag">Aug 2025 – Sep 2025</span>
-            <h3 class="font-display text-xl font-semibold mt-3">IT &amp; Network Security Intern</h3>
-            <p class="text-purple-300 text-sm mt-1">Crédit Agricole Egypt · Cairo</p>
-          </div>
-          <div class="md:pl-12 mt-3 md:mt-0">
-            <p class="muted text-sm leading-relaxed">Internship in IT &amp; network security.</p>
-          </div>
+      <!-- Archive: index list with cursor preview (injected) -->
+      <div class="archive">
+        <div class="archive__head">
+          <span class="mono eyebrow">Archive</span>
+          <a href="https://www.behance.net/ahmed-fikry" target="_blank" rel="noopener" class="btn btn--line magnetic" data-cursor="Open ↗">All on Behance</a>
         </div>
-        -->
-
-        <!-- 1: Boyot (left) -->
-        <div class="tl__item reveal md:grid md:grid-cols-2 md:gap-12 mb-14">
-          <div class="md:text-right md:pr-12">
-            <span class="tl__node"></span>
-            <span class="tag">Jul 2024 – Present</span>
-            <h3 class="font-display text-xl font-semibold mt-3">Multimedia Designer</h3>
-            <p class="text-purple-300 text-sm mt-1">Boyot · Garden City, Cairo</p>
-          </div>
-          <div class="md:pl-12 mt-3 md:mt-0">
-            <p class="muted text-sm leading-relaxed">
-              Produced <span class="text-purple-300">15+ animated videos</span> and 20+ marketing &amp; demo edits that tripled social engagement.
-              Designed 50+ branded visuals that grew impressions by 40%, plus presentation decks used with partners.
-            </p>
-          </div>
-        </div>
-
-        <!-- 2: Paycoo (right) -->
-        <div class="tl__item reveal md:grid md:grid-cols-2 md:gap-12 mb-14">
-          <div class="md:col-start-2 md:pl-12 md:order-2">
-            <span class="tl__node"></span>
-            <span class="tag">Dec 2023 – Present</span>
-            <h3 class="font-display text-xl font-semibold mt-3">Co-Founder &amp; Product Designer</h3>
-            <p class="text-purple-300 text-sm mt-1">Paycoo</p>
-          </div>
-          <div class="md:text-right md:pr-12 md:order-1 mt-3 md:mt-0">
-            <p class="muted text-sm leading-relaxed">
-              Led product design, UX strategy and the full visual identity for a digital wallet app — building the brand,
-              the interface and the experience from scratch, and lifting beta retention <span class="text-purple-300">60%</span> above competitors.
-            </p>
-          </div>
-        </div>
-
-        <!-- 3: CodeX (left) -->
-        <div class="tl__item reveal md:grid md:grid-cols-2 md:gap-12">
-          <div class="md:text-right md:pr-12">
-            <span class="tl__node"></span>
-            <span class="tag">Jan 2022 – Jan 2025</span>
-            <h3 class="font-display text-xl font-semibold mt-3">Multimedia &amp; UI/UX Designer</h3>
-            <p class="text-purple-300 text-sm mt-1">CodeX Solutions</p>
-          </div>
-          <div class="md:pl-12 mt-3 md:mt-0">
-            <p class="muted text-sm leading-relaxed">
-              Led a full company rebrand across 6+ platforms, designed UI/UX for 3 websites (<span class="text-purple-300">+32% session time</span>)
-              and produced motion campaigns that grew reach by 122% — all delivered 100% on time.
-            </p>
-          </div>
-        </div>
+        <ol class="archive__list" id="archive"></ol>
       </div>
-    </div>
-  </section>
+      <div id="peek" aria-hidden="true"><img alt="" /></div>
+    </section>
 
-  <!-- ================= WORK ================= -->
-  <section id="work" class="relative py-24 lg:py-32 bg-white/[0.015]">
-    <div class="ghost" data-dir="left" aria-hidden="true">WORK</div>
-    <div class="max-w-7xl mx-auto px-5 lg:px-8">
-      <div class="flex flex-wrap items-end justify-between gap-6 reveal">
-        <div>
-          <div class="kicker mb-5">Selected work</div>
-          <h2 class="reveal-head font-display font-semibold text-3xl md:text-5xl grad-text" style="background-size:200% 100%;">My work &amp; projects</h2>
+    <!-- ================= CONTACT ================= -->
+    <section id="contact" class="contact">
+      <div class="section-head">
+        <span class="mono eyebrow">06 / Contact</span>
+      </div>
+      <h2 class="contact__title">
+        <span class="line"><span class="word" data-split>Let's</span></span>
+        <span class="line"><em class="serif">make</em> <span class="word" data-split>something</span></span>
+        <span class="line line--outline"><span class="word" data-split>together</span></span>
+      </h2>
+
+      <div class="contact-grid">
+        <div class="contact-info">
+          <a class="email" href="mailto:ahmedfikry277@gmail.com">ahmedfikry277@gmail.com</a>
+          <button class="copy mono" id="copy-email" type="button">Copy email</button>
+          <dl class="contact-meta mono">
+            <div><dt>Phone</dt><dd><a href="tel:+201064368435">+20 106 436 8435</a></dd></div>
+            <div><dt>Based</dt><dd>Cairo, Egypt (GMT+3)</dd></div>
+            <div><dt>Status</dt><dd><span class="dot-live"></span> Taking projects</dd></div>
+          </dl>
+          <div class="social" id="social-row"></div>
         </div>
-        <a href="https://www.behance.net/ahmed-fikry" target="_blank" rel="noopener" class="btn-ghost magnetic" data-cursor="Open ↗">
-          Full Behance
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg>
-        </a>
-      </div>
 
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-14" data-stagger id="workGrid">
-        <!-- Cards injected by JS -->
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= CONTACT ================= -->
-  <section id="contact" class="relative py-24 lg:py-32">
-    <div class="ghost" data-dir="right" aria-hidden="true">CONTACT</div>
-    <div class="max-w-7xl mx-auto px-5 lg:px-8">
-      <div class="text-center max-w-2xl mx-auto reveal">
-        <div class="kicker justify-center mb-5">Get in touch</div>
-        <h2 class="reveal-head font-display font-semibold text-3xl md:text-5xl grad-text" style="background-size:200% 100%;">Let's work together</h2>
-        <p class="muted mt-5 text-[15px]">Got a project in mind or just want to say hi? Fill in the form and I'll get back to you.</p>
-      </div>
-
-      <div class="grid lg:grid-cols-12 gap-8 mt-14 items-start">
-        <!-- Clean form -->
-        <div class="lg:col-span-7 reveal">
-          <div class="panel p-7 md:p-9 rounded-2xl">
-            <form id="contactForm" action="https://formspree.io/f/xrgwqrkg" method="POST">
-              <div class="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <label class="lbl" for="cname">Your name</label>
-                  <input class="input" type="text" name="name" id="cname" placeholder="Jane Doe" autocomplete="name" />
-                </div>
-                <div>
-                  <label class="lbl" for="cemail">Email address</label>
-                  <input class="input" type="email" name="email" id="cemail" placeholder="jane@email.com" autocomplete="email" />
-                </div>
-              </div>
-              <div class="mt-5">
-                <label class="lbl" for="csubject">Subject <span>(optional)</span></label>
-                <input class="input" type="text" name="subject" id="csubject" placeholder="What's it about?" />
-              </div>
-              <div class="mt-5">
-                <label class="lbl" for="cmsg">Message</label>
-                <textarea class="input" name="message" id="cmsg" rows="5" placeholder="Tell me about your project…"></textarea>
-              </div>
-              <div class="flex items-center gap-4 mt-7">
-                <button type="submit" id="sendBtn" class="btn-primary magnetic">
-                  Send message
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                </button>
-              </div>
-              <p id="sendState" class="send-state"></p>
-            </form>
+        <form id="contactForm" class="form" action="https://formspree.io/f/xrgwqrkg" method="POST">
+          <div class="field"><input id="cname" name="name" type="text" placeholder=" " autocomplete="name" /><label for="cname">Your name</label></div>
+          <div class="field"><input id="cemail" name="email" type="email" placeholder=" " autocomplete="email" /><label for="cemail">Email</label></div>
+          <div class="field"><input id="csubject" name="subject" type="text" placeholder=" " /><label for="csubject">What's it about</label></div>
+          <div class="field"><textarea id="cmsg" name="message" rows="4" placeholder=" "></textarea><label for="cmsg">Tell me about the project</label></div>
+          <div class="form__foot">
+            <button type="submit" id="sendBtn" class="btn btn--solid magnetic">Send message <i>→</i></button>
+            <p id="sendState" class="send-state mono"></p>
           </div>
-        </div>
-
-        <!-- Contact info -->
-        <div class="lg:col-span-5 reveal">
-          <div class="panel p-7 rounded-2xl">
-            <a href="tel:+201064368435" class="cinfo group">
-              <span class="ic"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.5-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.8 2z"/></svg></span>
-              <div><div class="text-xs muted">Phone</div><div class="font-medium group-hover:text-purple-300 transition">+20 106 436 8435</div></div>
-            </a>
-            <a href="mailto:ahmedfikry277@gmail.com" class="cinfo group">
-              <span class="ic"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></span>
-              <div><div class="text-xs muted">Email</div><div class="font-medium group-hover:text-purple-300 transition break-all">ahmedfikry277@gmail.com</div></div>
-            </a>
-            <div class="cinfo" style="border-bottom:none;">
-              <span class="ic"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-              <div><div class="text-xs muted">Location</div><div class="font-medium">Cairo, Egypt</div></div>
-            </div>
-
-            <div class="mt-6 pt-6 border-t border-white/10">
-              <div class="text-xs muted mb-3 tracking-widest uppercase">Find me online</div>
-              <div class="flex gap-3" id="social-row"></div>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ================= FOOTER ================= -->
-  <footer class="border-t border-white/5 py-10">
-    <div class="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center">
-      <a href="#home" class="font-display font-bold text-lg">Fikry<span class="text-purple-400">.</span></a>
-      <p class="text-sm muted">© <span id="year">2026</span> Ahmed Fikry — designed &amp; built with <span class="text-purple-300">♥</span>.</p>
-      <div class="flex gap-3" id="footer-social"></div>
-    </div>
-  </footer>
+    <footer class="footer mono">
+      <span>© <span id="year">2026</span> Ahmed Fikry</span>
+      <span class="hide-sm">Designed &amp; built in Cairo</span>
+      <a href="#top" id="toTop">Back to top ↑</a>
+    </footer>
+  </main>
 
-  <button id="toTop" aria-label="Back to top">
-    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-  </button>
-
-  <!-- ================= DATA + INJECTION ================= -->
+  <!-- ================= DATA ================= -->
   <script>
-    // Social links (inline SVG, no icon-font dependency).
     const SOCIAL = [
-      { name: "Behance", url: "https://www.behance.net/ahmed-fikry", path: "M8.2 6.5H3v11h5.4c2.4 0 4-1.2 4-3.2 0-1.4-.8-2.4-2-2.7 1-.4 1.6-1.2 1.6-2.3 0-1.8-1.4-2.8-3.8-2.8zm-.3 4.4H5.3V8.4h2.5c1 0 1.6.4 1.6 1.2s-.6 1.3-1.5 1.3zm.2 4.7H5.3v-2.8h2.7c1.2 0 1.8.5 1.8 1.4s-.6 1.4-1.7 1.4zM21 11.6c0-2.3-1.5-4-3.9-4s-4 1.8-4 4.4 1.6 4.3 4.1 4.3c2 0 3.4-1 3.8-2.6h-2c-.2.6-.8 1-1.7 1-1.1 0-1.8-.7-1.9-1.9H21v-1.2zm-3.9-2.3c1 0 1.6.6 1.7 1.6h-3.4c.2-1 .8-1.6 1.7-1.6zM15 6.7h4.6v1.2H15z" },
-      { name: "LinkedIn", url: "http://linkedin.com/in/ahmed-fikry/", path: "M6.94 8.5H4V20h2.94V8.5zM5.47 4a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4zM20 13.4c0-2.8-1.5-4.1-3.5-4.1-1.6 0-2.3.9-2.7 1.5V8.5H11V20h2.9v-6.1c0-1.3.6-2 1.7-2s1.5.8 1.5 2V20H20v-6.6z" },
-      { name: "Instagram", url: "https://instagram.com/medo.fikry", path: "M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm0 5.8a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6zM16 4H8a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V8a4 4 0 0 0-4-4zm2.8 12A2.8 2.8 0 0 1 16 18.8H8A2.8 2.8 0 0 1 5.2 16V8A2.8 2.8 0 0 1 8 5.2h8A2.8 2.8 0 0 1 18.8 8v8zm-2.6-8.4a.85.85 0 1 1-1.7 0 .85.85 0 0 1 1.7 0z" },
+      { name: "Behance", url: "https://www.behance.net/ahmed-fikry" },
+      { name: "LinkedIn", url: "http://linkedin.com/in/ahmed-fikry/" },
+      { name: "Instagram", url: "https://instagram.com/medo.fikry" },
     ];
-    function socialBtns() {
-      return SOCIAL.map(s => `<a href="${s.url}" target="_blank" rel="noopener" title="${s.name}" class="magnetic w-10 h-10 grid place-items-center rounded-xl glass hover:text-purple-300 hover:border-purple-400/50 transition"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="${s.path}"/></svg></a>`).join("");
-    }
-    ["social-row", "footer-social", "mobile-social"].forEach(id => {
-      const el = document.getElementById(id); if (el) el.innerHTML = socialBtns();
-    });
+    const socialHTML = SOCIAL.map(s => `<a href="${s.url}" target="_blank" rel="noopener" class="magnetic">${s.name} <i>↗</i></a>`).join("");
+    ["social-row", "menu-social"].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = socialHTML; });
 
-    // Projects — local covers live in assets/images; newer Behance covers load from Behance's CDN (full URL)
+    // Covers in assets/images are local; newer Behance covers load from Behance's CDN.
     const BE = "https://mir-s3-cdn-cf.behance.net/projects/max_808_webp/";
-    const WORKS = [
-      { t: "Paycoo — Digital Wallet", c: "Product · UI/UX", url: "https://paycoo.app", img: "paycoo.png" },
-      { t: "Confluence Consultancy", c: "UX Case Study · Website", url: "https://www.behance.net/gallery/257359373/Confluence-Consultancy-Website-UX-Case-Study", img: BE + "11a690257359373.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
-      { t: "Gym Training Website", c: "UX Case Study · Template", url: "https://www.behance.net/gallery/257359213/Gym-Training-Website-Template-UX-Case-Study", img: BE + "8e6992257359213.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
-      { t: "Digital Agency Website", c: "UX Case Study · Template", url: "https://www.behance.net/gallery/257358527/Digital-Agency-Website-Template-UX-Case-Study", img: BE + "fb1466257358527.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
-      { t: "Loop Dimension Agency", c: "UX Case Study · Website", url: "https://www.behance.net/gallery/257357731/Loop-Dimension-Agency-Website-UX-Case-Study", img: BE + "d1e52e257357731.Y3JvcCwxNjE2LDEyNjQsMCww.jpg" },
-      { t: "ATEC Learning Platform", c: "UX Case Study · Dashboard", url: "https://www.behance.net/gallery/257355739/ATEC-Learning-Platform-Dashboard-UX-Case-Study", img: BE + "e3b0d2257355739.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
-      { t: "MNZ Technology", c: "UX Case Study · Cybersecurity", url: "https://www.behance.net/gallery/257354035/MNZ-Technology-Cybersecurity-Website-UX-Case-Study", img: BE + "e42408257354035.Y3JvcCwxNjE2LDEyNjQsMCww.jpg" },
-      { t: "Salidra", c: "Branding Identity", url: "https://www.behance.net/gallery/257099633/Salidra-Branding-Identity", img: BE + "beed15257099633.Y3JvcCwxMTk0LDkzNCwxMDMsMA.png" },
-      { t: "Mabruok", c: "Branding Identity", url: "https://www.behance.net/gallery/256919729/Mabruok-Branding-Identity", img: BE + "94b22a256919729.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png" },
-      { t: "Lunexa", c: "Branding Identity", url: "https://www.behance.net/gallery/256919227/Lunexa-Branding-Identity", img: BE + "9721cb256919227.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png" },
-      { t: "Social Advertising Posters", c: "Social Media", url: "https://www.behance.net/gallery/183751367/Social-Advertising-Posters", img: BE + "ced121183751367.Y3JvcCwxMDgwLDg0NCwwLDExNw.png" },
-      { t: "ACE Clothing Brand Promo", c: "Brand Promo", url: "https://www.behance.net/gallery/179542015/ACE-Clothing-Brand-Promo", img: BE + "33ffd4179542015.Y3JvcCwxMzgwLDEwODAsMjcwLDA.jpg" },
-      { t: "Your Egypt Tour Guide", c: "Branding Identity", url: "https://www.behance.net/gallery/170417589/Your-Egypt-Tour-Guide-Logo-Tourism-Company", img: "your egypt tour.jpg" },
-      { t: "Al Ahly Mortgage Finance", c: "Social Media", url: "https://www.behance.net/gallery/177645537/Social-Media-posts", img: "Al Ahly Mortage.jpg" },
-      { t: "CodeX Solutions", c: "Branding Identity", url: "https://www.behance.net/gallery/177642661/Codex-Solution-Branding-identity", img: "codex.jpg" },
-      { t: "Anna — Exciting Egypt Tours", c: "Branding Identity", url: "https://www.behance.net/gallery/170927069/Anna-Exciting-Egypt-Tours-Branding-Identity", img: "anna egypt tours.jpg" },
-      { t: "Beatroot Record", c: "UI / UX", url: "https://www.behance.net/gallery/178441553/Website-presentation-Beatroot-Record-UIUX", img: "beatroot.jpg" },
-      { t: "Characters", c: "Illustration / Painting", url: "https://www.behance.net/gallery/86320371/Characters", img: "characters.png" },
+    const FEATURED = [
+      { t: "Paycoo", s: "Digital wallet, from brand to beta", c: "Product · UI/UX · Identity", y: "2024", url: "https://paycoo.app", img: "paycoo.png" },
+      { t: "Confluence Consultancy", s: "Consultancy website, end to end", c: "UX case study", y: "2025", url: "https://www.behance.net/gallery/257359373/Confluence-Consultancy-Website-UX-Case-Study", img: BE + "11a690257359373.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
+      { t: "ATEC Learning", s: "Learning platform and dashboard", c: "UX case study · Dashboard", y: "2025", url: "https://www.behance.net/gallery/257355739/ATEC-Learning-Platform-Dashboard-UX-Case-Study", img: BE + "e3b0d2257355739.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
+      { t: "Salidra", s: "Brand identity", c: "Identity", y: "2025", url: "https://www.behance.net/gallery/257099633/Salidra-Branding-Identity", img: BE + "beed15257099633.Y3JvcCwxMTk0LDkzNCwxMDMsMA.png" },
+      { t: "MNZ Technology", s: "Cybersecurity website", c: "UX case study", y: "2025", url: "https://www.behance.net/gallery/257354035/MNZ-Technology-Cybersecurity-Website-UX-Case-Study", img: BE + "e42408257354035.Y3JvcCwxNjE2LDEyNjQsMCww.jpg" },
+      { t: "Anna Egypt Tours", s: "Tourism brand identity", c: "Identity", y: "2023", url: "https://www.behance.net/gallery/170927069/Anna-Exciting-Egypt-Tours-Branding-Identity", img: "anna egypt tours.jpg" },
     ];
-    document.getElementById("workGrid").innerHTML = WORKS.map((w, i) => `
-      <a href="${w.url}" target="_blank" rel="noopener" class="work group" data-cursor="View project ↗">
-        <div class="work__bg" style="background-image:url('${/^https?:/.test(w.img) ? w.img : encodeURI('assets/images/' + w.img)}');background-size:cover;background-position:center;background-color:#15101f;"></div>
-        <div class="work__veil"></div>
-        <div class="work__glare"></div>
-        <span class="work__num">${String(i + 1).padStart(2, "0")}</span>
-        <span class="work__arrow"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
-        <div class="work__meta">
-          <div class="text-[11px] text-purple-300 tracking-wider uppercase font-medium">${w.c}</div>
-          <h3 class="font-display text-xl font-semibold mt-1">${w.t}</h3>
+    const ARCHIVE = [
+      { t: "Lunexa", c: "Brand identity", y: "2025", url: "https://www.behance.net/gallery/256919227/Lunexa-Branding-Identity", img: BE + "9721cb256919227.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png" },
+      { t: "Mabruok", c: "Brand identity", y: "2025", url: "https://www.behance.net/gallery/256919729/Mabruok-Branding-Identity", img: BE + "94b22a256919729.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png" },
+      { t: "Gym Training Website", c: "UX case study", y: "2025", url: "https://www.behance.net/gallery/257359213/Gym-Training-Website-Template-UX-Case-Study", img: BE + "8e6992257359213.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
+      { t: "Digital Agency Website", c: "UX case study", y: "2025", url: "https://www.behance.net/gallery/257358527/Digital-Agency-Website-Template-UX-Case-Study", img: BE + "fb1466257358527.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
+      { t: "Loop Dimension Agency", c: "UX case study", y: "2025", url: "https://www.behance.net/gallery/257357731/Loop-Dimension-Agency-Website-UX-Case-Study", img: BE + "d1e52e257357731.Y3JvcCwxNjE2LDEyNjQsMCww.jpg" },
+      { t: "Social Advertising Posters", c: "Graphic design", y: "2024", url: "https://www.behance.net/gallery/183751367/Social-Advertising-Posters", img: BE + "ced121183751367.Y3JvcCwxMDgwLDg0NCwwLDExNw.png" },
+      { t: "ACE Clothing", c: "Brand promo · Motion", y: "2023", url: "https://www.behance.net/gallery/179542015/ACE-Clothing-Brand-Promo", img: BE + "33ffd4179542015.Y3JvcCwxMzgwLDEwODAsMjcwLDA.jpg" },
+      { t: "Beatroot Records", c: "UI / UX", y: "2023", url: "https://www.behance.net/gallery/178441553/Website-presentation-Beatroot-Record-UIUX", img: "beatroot.jpg" },
+      { t: "Al Ahly Mortgage Finance", c: "Social media", y: "2023", url: "https://www.behance.net/gallery/177645537/Social-Media-posts", img: "Al Ahly Mortage.jpg" },
+      { t: "CodeX Solutions", c: "Brand identity", y: "2023", url: "https://www.behance.net/gallery/177642661/Codex-Solution-Branding-identity", img: "codex.jpg" },
+      { t: "Your Egypt Tour Guide", c: "Brand identity", y: "2023", url: "https://www.behance.net/gallery/170417589/Your-Egypt-Tour-Guide-Logo-Tourism-Company", img: "your egypt tour.jpg" },
+      { t: "Characters", c: "Illustration", y: "2019", url: "https://www.behance.net/gallery/86320371/Characters", img: "characters.png" },
+    ];
+    const src = (img) => /^(https?:|data:)/.test(img) ? img : encodeURI("assets/images/" + img);
+    const pad = (n) => String(n).padStart(2, "0");
+
+    document.getElementById("stack").innerHTML = FEATURED.map((w, i) => `
+      <a href="${w.url}" target="_blank" rel="noopener" class="card" data-cursor="View project ↗" style="--i:${i}">
+        <div class="card__media"><img src="${src(w.img)}" alt="${w.t}" loading="lazy" /></div>
+        <div class="card__body">
+          <span class="mono card__n">${pad(i + 1)} / ${pad(FEATURED.length)}</span>
+          <h3>${w.t}</h3>
+          <p class="card__sub">${w.s}</p>
+          <div class="card__meta mono"><span>${w.c}</span><span>${w.y}</span></div>
+          <span class="card__go">Open <i>↗</i></span>
         </div>
       </a>`).join("");
+
+    document.getElementById("archive").innerHTML = ARCHIVE.map((w, i) => `
+      <li><a href="${w.url}" target="_blank" rel="noopener" class="row" data-peek="${src(w.img)}">
+        <span class="mono row__n">${pad(i + 7)}</span>
+        <span class="row__t">${w.t}</span>
+        <span class="row__c mono">${w.c}</span>
+        <span class="row__y mono">${w.y}</span>
+        <span class="row__a">↗</span>
+      </a></li>`).join("");
   </script>
 
   <script src="js/bg.js"></script>
