@@ -289,8 +289,9 @@ section { position: relative; padding: clamp(5rem, 12vw, 11rem) var(--gutter); }
 .svc ul li { padding: .35rem .65rem; border: 1px solid var(--line-2); border-radius: 99px; }
 .svc--cta { background: linear-gradient(135deg, rgba(168,85,247,.22), rgba(14,12,22,.6)); }
 @media (min-width: 1024px) {
-  .services__pin { height: 100vh; display: grid; grid-template-rows: auto auto; align-content: center; padding-top: 4.5rem; padding-bottom: 2rem; }
-  .services__track { grid-auto-flow: column; grid-auto-columns: clamp(22rem, 26vw, 27rem); gap: 1.1rem; width: max-content; height: clamp(18rem, 48vh, 26rem); will-change: transform; }
+  .services__pin { height: 100vh; display: grid; grid-template-rows: auto minmax(0, 1fr); align-content: start; padding-top: 5.5rem; padding-bottom: 1.5rem; }
+  .services__head { margin-bottom: 1.25rem; }
+  .services__track { grid-auto-flow: column; grid-auto-columns: clamp(22rem, 26vw, 27rem); gap: 1.1rem; width: max-content; height: 100%; max-height: 28rem; will-change: transform; }
   .svc { min-height: 0; height: 100%; }
 }
 
