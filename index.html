@@ -7,9 +7,45 @@
   <title>Ahmed Fikry — Designer of brands, motion and interfaces</title>
   <meta name="description" content="Ahmed Fikry is a multidisciplinary designer in Cairo. Brand identity, motion graphics and UI/UX that people remember." />
   <meta name="author" content="Ahmed Fikry" />
-  <meta property="og:title" content="Ahmed Fikry — Designer" />
-  <meta property="og:description" content="Brand identity, motion graphics and UI/UX that people remember." />
+  <link rel="canonical" href="https://fikry-designs.vercel.app/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="keywords" content="Ahmed Fikry, Ahmed Fikry designer, Ahmed Fikry portfolio, graphic designer Cairo, motion designer Egypt, UI/UX designer Cairo, brand identity designer" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://fikry-designs.vercel.app/" />
+  <meta property="og:site_name" content="Ahmed Fikry" />
+  <meta property="og:title" content="Ahmed Fikry — Designer of brands, motion and interfaces" />
+  <meta property="og:description" content="Multidisciplinary designer in Cairo. Brand identity, motion graphics and UI/UX that people remember." />
+  <meta property="og:image" content="https://fikry-designs.vercel.app/assets/images/personal%20image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ahmed Fikry — Designer" />
+  <meta name="twitter:description" content="Brand identity, motion graphics and UI/UX from Cairo." />
+  <meta name="twitter:image" content="https://fikry-designs.vercel.app/assets/images/personal%20image.jpg" />
   <meta name="theme-color" content="#08070d" />
+
+  <!-- Tells Google who this page is about and which profiles belong to the same person -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Ahmed Fikry",
+    "alternateName": ["Ahmed Fekry", "Fikry Designs"],
+    "url": "https://fikry-designs.vercel.app/",
+    "image": "https://fikry-designs.vercel.app/assets/images/personal%20image.jpg",
+    "jobTitle": "Multidisciplinary Designer",
+    "description": "Brand identity, motion graphics and UI/UX designer based in Cairo, Egypt.",
+    "email": "mailto:ahmedfikry277@gmail.com",
+    "telephone": "+201064368435",
+    "address": { "@type": "PostalAddress", "addressLocality": "Cairo", "addressCountry": "EG" },
+    "knowsAbout": ["Brand identity", "Motion graphics", "UI/UX design", "Graphic design", "Video editing", "Art direction"],
+    "worksFor": { "@type": "Organization", "name": "Paycoo", "url": "https://paycoo.app" },
+    "sameAs": [
+      "https://www.behance.net/ahmed-fikry",
+      "https://www.linkedin.com/in/ahmed-fikry/",
+      "https://github.com/Ahmed-Fekry"
+    ]
+  }
+  </script>
 
   <!-- Fonts: Cabinet Grotesk (display) · Satoshi (text) · Gambetta (italic accent) · JetBrains Mono (labels) -->
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
@@ -330,9 +366,9 @@
   <script>
     const SOCIAL = [
       { name: "Behance", url: "https://www.behance.net/ahmed-fikry" },
-      { name: "LinkedIn", url: "http://linkedin.com/in/ahmed-fikry/" },
+      { name: "LinkedIn", url: "https://www.linkedin.com/in/ahmed-fikry/" },
     ];
-    const socialHTML = SOCIAL.map(s => `<a href="${s.url}" target="_blank" rel="noopener" class="magnetic">${s.name} <i>↗</i></a>`).join("");
+    const socialHTML = SOCIAL.map(s => `<a href="${s.url}" target="_blank" class="magnetic" rel="me noopener">${s.name} <i>↗</i></a>`).join("");
     ["social-row", "menu-social"].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = socialHTML; });
 
     // Covers in assets/images are local; newer Behance covers load from Behance's CDN.

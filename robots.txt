@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fikry-designs.vercel.app/sitemap.xml
