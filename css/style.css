@@ -203,8 +203,9 @@ section { position: relative; padding: clamp(5rem, 12vw, 11rem) var(--gutter); }
 .word { display: inline-block; white-space: nowrap; transform-style: preserve-3d; }
 .char { display: inline-block; will-change: transform; backface-visibility: hidden; }
 
-.hero-bottom { display: grid; grid-template-columns: auto 1fr; align-items: end; gap: 1.5rem; }
-.hero-copy { max-width: 34rem; justify-self: end; display: grid; gap: 1rem; }
+.hero-bottom { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 1.5rem; }
+.hero-copy { max-width: 34rem; justify-self: start; display: grid; gap: 1rem; }
+.badge { order: 2; }
 .lead { margin: 0; font-family: var(--display); font-weight: 700; font-size: clamp(1.25rem, 2.2vw, 1.7rem); letter-spacing: -.02em; }
 #typewriter { color: var(--accent-2); }
 .tw-caret { display: inline-block; width: 2px; height: 1em; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(1) infinite; }
