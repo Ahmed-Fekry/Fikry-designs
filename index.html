@@ -381,7 +381,7 @@
           <div class="kicker mb-5">Selected work</div>
           <h2 class="reveal-head font-display font-semibold text-3xl md:text-5xl grad-text" style="background-size:200% 100%;">My work &amp; projects</h2>
         </div>
-        <a href="https://www.behance.net/medofikry11" target="_blank" rel="noopener" class="btn-ghost magnetic">
+        <a href="https://www.behance.net/ahmed-fikry" target="_blank" rel="noopener" class="btn-ghost magnetic">
           Full Behance
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg>
         </a>
@@ -479,7 +479,7 @@
   <script>
     // Social links (inline SVG, no icon-font dependency).
     const SOCIAL = [
-      { name: "Behance", url: "https://www.behance.net/medofikry11", path: "M8.2 6.5H3v11h5.4c2.4 0 4-1.2 4-3.2 0-1.4-.8-2.4-2-2.7 1-.4 1.6-1.2 1.6-2.3 0-1.8-1.4-2.8-3.8-2.8zm-.3 4.4H5.3V8.4h2.5c1 0 1.6.4 1.6 1.2s-.6 1.3-1.5 1.3zm.2 4.7H5.3v-2.8h2.7c1.2 0 1.8.5 1.8 1.4s-.6 1.4-1.7 1.4zM21 11.6c0-2.3-1.5-4-3.9-4s-4 1.8-4 4.4 1.6 4.3 4.1 4.3c2 0 3.4-1 3.8-2.6h-2c-.2.6-.8 1-1.7 1-1.1 0-1.8-.7-1.9-1.9H21v-1.2zm-3.9-2.3c1 0 1.6.6 1.7 1.6h-3.4c.2-1 .8-1.6 1.7-1.6zM15 6.7h4.6v1.2H15z" },
+      { name: "Behance", url: "https://www.behance.net/ahmed-fikry", path: "M8.2 6.5H3v11h5.4c2.4 0 4-1.2 4-3.2 0-1.4-.8-2.4-2-2.7 1-.4 1.6-1.2 1.6-2.3 0-1.8-1.4-2.8-3.8-2.8zm-.3 4.4H5.3V8.4h2.5c1 0 1.6.4 1.6 1.2s-.6 1.3-1.5 1.3zm.2 4.7H5.3v-2.8h2.7c1.2 0 1.8.5 1.8 1.4s-.6 1.4-1.7 1.4zM21 11.6c0-2.3-1.5-4-3.9-4s-4 1.8-4 4.4 1.6 4.3 4.1 4.3c2 0 3.4-1 3.8-2.6h-2c-.2.6-.8 1-1.7 1-1.1 0-1.8-.7-1.9-1.9H21v-1.2zm-3.9-2.3c1 0 1.6.6 1.7 1.6h-3.4c.2-1 .8-1.6 1.7-1.6zM15 6.7h4.6v1.2H15z" },
       { name: "LinkedIn", url: "http://linkedin.com/in/ahmed-fikry/", path: "M6.94 8.5H4V20h2.94V8.5zM5.47 4a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4zM20 13.4c0-2.8-1.5-4.1-3.5-4.1-1.6 0-2.3.9-2.7 1.5V8.5H11V20h2.9v-6.1c0-1.3.6-2 1.7-2s1.5.8 1.5 2V20H20v-6.6z" },
       { name: "Instagram", url: "https://instagram.com/medo.fikry", path: "M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm0 5.8a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6zM16 4H8a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V8a4 4 0 0 0-4-4zm2.8 12A2.8 2.8 0 0 1 16 18.8H8A2.8 2.8 0 0 1 5.2 16V8A2.8 2.8 0 0 1 8 5.2h8A2.8 2.8 0 0 1 18.8 8v8zm-2.6-8.4a.85.85 0 1 1-1.7 0 .85.85 0 0 1 1.7 0z" },
     ];
@@ -490,9 +490,21 @@
       const el = document.getElementById(id); if (el) el.innerHTML = socialBtns();
     });
 
-    // Projects — real cover images from assets/images
+    // Projects — local covers live in assets/images; newer Behance covers load from Behance's CDN (full URL)
+    const BE = "https://mir-s3-cdn-cf.behance.net/projects/max_808_webp/";
     const WORKS = [
       { t: "Paycoo — Digital Wallet", c: "Product · UI/UX", url: "https://paycoo.app", img: "paycoo.png" },
+      { t: "Confluence Consultancy", c: "UX Case Study · Website", url: "https://www.behance.net/gallery/257359373/Confluence-Consultancy-Website-UX-Case-Study", img: BE + "11a690257359373.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
+      { t: "Gym Training Website", c: "UX Case Study · Template", url: "https://www.behance.net/gallery/257359213/Gym-Training-Website-Template-UX-Case-Study", img: BE + "8e6992257359213.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
+      { t: "Digital Agency Website", c: "UX Case Study · Template", url: "https://www.behance.net/gallery/257358527/Digital-Agency-Website-Template-UX-Case-Study", img: BE + "fb1466257358527.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
+      { t: "Loop Dimension Agency", c: "UX Case Study · Website", url: "https://www.behance.net/gallery/257357731/Loop-Dimension-Agency-Website-UX-Case-Study", img: BE + "d1e52e257357731.Y3JvcCwxNjE2LDEyNjQsMCww.jpg" },
+      { t: "ATEC Learning Platform", c: "UX Case Study · Dashboard", url: "https://www.behance.net/gallery/257355739/ATEC-Learning-Platform-Dashboard-UX-Case-Study", img: BE + "e3b0d2257355739.Y3JvcCwxNjE2LDEyNjQsMCww.png" },
+      { t: "MNZ Technology", c: "UX Case Study · Cybersecurity", url: "https://www.behance.net/gallery/257354035/MNZ-Technology-Cybersecurity-Website-UX-Case-Study", img: BE + "e42408257354035.Y3JvcCwxNjE2LDEyNjQsMCww.jpg" },
+      { t: "Salidra", c: "Branding Identity", url: "https://www.behance.net/gallery/257099633/Salidra-Branding-Identity", img: BE + "beed15257099633.Y3JvcCwxMTk0LDkzNCwxMDMsMA.png" },
+      { t: "Mabruok", c: "Branding Identity", url: "https://www.behance.net/gallery/256919729/Mabruok-Branding-Identity", img: BE + "94b22a256919729.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png" },
+      { t: "Lunexa", c: "Branding Identity", url: "https://www.behance.net/gallery/256919227/Lunexa-Branding-Identity", img: BE + "9721cb256919227.Y3JvcCwxMzgwLDEwODAsMjcwLDA.png" },
+      { t: "Social Advertising Posters", c: "Social Media", url: "https://www.behance.net/gallery/183751367/Social-Advertising-Posters", img: BE + "ced121183751367.Y3JvcCwxMDgwLDg0NCwwLDExNw.png" },
+      { t: "ACE Clothing Brand Promo", c: "Brand Promo", url: "https://www.behance.net/gallery/179542015/ACE-Clothing-Brand-Promo", img: BE + "33ffd4179542015.Y3JvcCwxMzgwLDEwODAsMjcwLDA.jpg" },
       { t: "Your Egypt Tour Guide", c: "Branding Identity", url: "https://www.behance.net/gallery/170417589/Your-Egypt-Tour-Guide-Logo-Tourism-Company", img: "your egypt tour.jpg" },
       { t: "Al Ahly Mortgage Finance", c: "Social Media", url: "https://www.behance.net/gallery/177645537/Social-Media-posts", img: "Al Ahly Mortage.jpg" },
       { t: "CodeX Solutions", c: "Branding Identity", url: "https://www.behance.net/gallery/177642661/Codex-Solution-Branding-identity", img: "codex.jpg" },
@@ -502,9 +514,9 @@
     ];
     document.getElementById("workGrid").innerHTML = WORKS.map((w, i) => `
       <a href="${w.url}" target="_blank" rel="noopener" class="work group">
-        <div class="work__bg" style="background-image:url('${encodeURI('assets/images/' + w.img)}');background-size:cover;background-position:center;background-color:#15101f;"></div>
+        <div class="work__bg" style="background-image:url('${/^https?:/.test(w.img) ? w.img : encodeURI('assets/images/' + w.img)}');background-size:cover;background-position:center;background-color:#15101f;"></div>
         <div class="work__veil"></div>
-        <span class="work__num">0${i + 1}</span>
+        <span class="work__num">${String(i + 1).padStart(2, "0")}</span>
         <span class="work__arrow"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
         <div class="work__meta">
           <div class="text-[11px] text-purple-300 tracking-wider uppercase font-medium">${w.c}</div>
