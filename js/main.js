@@ -281,7 +281,7 @@
           const next = cards[i + 1];
           if (!next) return;
           gsap.to(card, { scale: 0.94 - (cards.length - i) * 0.004, opacity: 0.55, filter: "blur(2px)", ease: "none",
-            scrollTrigger: { trigger: next, start: "top 80%", end: "top 12%", scrub: true } });
+            scrollTrigger: { trigger: next, start: "top 85%", end: "top 14%", scrub: true } });
         });
       },
       "(max-width: 899px)": () => {

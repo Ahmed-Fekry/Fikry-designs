@@ -163,7 +163,7 @@ section { position: relative; padding: clamp(5rem, 12vw, 11rem) var(--gutter); }
 .eyebrow::before { content: ""; display: inline-block; width: 2rem; height: 1px; background: var(--accent); vertical-align: middle; margin-right: .7rem; }
 .h2 {
   margin: 0; font-family: var(--display); font-weight: 800; letter-spacing: -.035em; line-height: .98;
-  font-size: clamp(2.4rem, 6.5vw, 5.6rem); text-wrap: balance;
+  font-size: clamp(2.4rem, 5.2vw, 4.6rem); text-wrap: balance;
 }
 .rail {
   position: absolute; right: var(--gutter); top: 50%; translate: 0 -50%; display: none; flex-direction: column; align-items: center; gap: 1rem;
@@ -270,27 +270,27 @@ section { position: relative; padding: clamp(5rem, 12vw, 11rem) var(--gutter); }
 /* ---------- Services ---------- */
 .services { padding-left: 0; padding-right: 0; }
 .services__pin { padding: 0 var(--gutter); }
-.services__head { display: grid; gap: 1rem; margin-bottom: 2.5rem; align-items: end; }
+.services__head { display: grid; gap: 1rem; margin-bottom: 1.75rem; align-items: end; }
 @media (min-width: 900px) { .services__head { grid-template-columns: auto 1fr auto; } .services__head .h2 { grid-column: 2; } }
 .services__hint { color: var(--muted); }
 .services__track { display: grid; gap: 1rem; }
 .svc {
-  position: relative; padding: 2rem; border: 1px solid var(--line); border-radius: 1.5rem; background: rgba(14,12,22,.6);
-  display: grid; align-content: space-between; gap: 1.5rem; min-height: 22rem; overflow: hidden;
+  position: relative; padding: 1.6rem 1.75rem; border: 1px solid var(--line); border-radius: 1.4rem; background: rgba(14,12,22,.6);
+  display: grid; align-content: space-between; gap: 1rem; min-height: 20rem; overflow: hidden;
   transition: border-color .4s;
 }
 .svc::after { content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .4s; pointer-events: none;
   background: radial-gradient(24rem 24rem at var(--mx,50%) var(--my,50%), rgba(168,85,247,0.16), transparent 60%); }
 .svc:hover { border-color: rgba(192,132,252,.45); } .svc:hover::after { opacity: 1; }
-.svc__n { font-family: var(--display); font-weight: 900; font-size: clamp(4rem, 10vw, 8rem); line-height: .8; letter-spacing: -.05em; color: transparent; -webkit-text-stroke: 1px rgba(236,233,243,.22); }
-.svc h3 { margin: 0; font-family: var(--display); font-weight: 800; font-size: clamp(1.6rem, 2.4vw, 2.2rem); letter-spacing: -.03em; line-height: 1; }
-.svc p { margin: .6rem 0 0; color: var(--ink-2); max-width: 26rem; }
+.svc__n { font-family: var(--display); font-weight: 900; font-size: clamp(3rem, 6vw, 5rem); line-height: .8; letter-spacing: -.05em; color: transparent; -webkit-text-stroke: 1px rgba(236,233,243,.22); }
+.svc h3 { margin: 0; font-family: var(--display); font-weight: 800; font-size: clamp(1.4rem, 2vw, 1.9rem); letter-spacing: -.03em; line-height: 1; }
+.svc p { margin: .5rem 0 0; color: var(--ink-2); max-width: 26rem; font-size: .95rem; }
 .svc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
 .svc ul li { padding: .35rem .65rem; border: 1px solid var(--line-2); border-radius: 99px; }
 .svc--cta { background: linear-gradient(135deg, rgba(168,85,247,.22), rgba(14,12,22,.6)); }
 @media (min-width: 1024px) {
-  .services__pin { height: 100vh; display: grid; grid-template-rows: auto 1fr; align-content: center; padding-top: 5rem; padding-bottom: 3rem; }
-  .services__track { grid-auto-flow: column; grid-auto-columns: clamp(26rem, 34vw, 32rem); gap: 1.25rem; width: max-content; height: min(60vh, 34rem); will-change: transform; }
+  .services__pin { height: 100vh; display: grid; grid-template-rows: auto auto; align-content: center; padding-top: 4.5rem; padding-bottom: 2rem; }
+  .services__track { grid-auto-flow: column; grid-auto-columns: clamp(22rem, 26vw, 27rem); gap: 1.1rem; width: max-content; height: clamp(18rem, 48vh, 26rem); will-change: transform; }
   .svc { min-height: 0; height: 100%; }
 }
 
@@ -315,17 +315,18 @@ section { position: relative; padding: clamp(5rem, 12vw, 11rem) var(--gutter); }
 .card:hover .card__media img { transform: scale(1.05); }
 .card__body { padding: 1.5rem; display: grid; gap: .5rem; align-content: start; }
 .card__n { color: var(--accent-2); }
-.card h3 { margin: .2rem 0 0; font-family: var(--display); font-weight: 800; font-size: clamp(1.8rem, 3.6vw, 3.2rem); letter-spacing: -.035em; line-height: 1; }
-.card__sub { margin: 0; color: var(--ink-2); font-size: 1.05rem; }
-.card__meta { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); }
-.card__go { display: inline-flex; align-items: center; gap: .4rem; margin-top: 1.2rem; font-weight: 500; color: var(--accent-2); }
+.card h3 { margin: .2rem 0 0; font-family: var(--display); font-weight: 800; font-size: clamp(1.6rem, 2.6vw, 2.4rem); letter-spacing: -.035em; line-height: 1; }
+.card__sub { margin: 0; color: var(--ink-2); font-size: 1rem; }
+.card__meta { display: flex; justify-content: space-between; gap: 1rem; margin-top: .6rem; padding-top: .8rem; border-top: 1px solid var(--line); color: var(--muted); }
+.card__go { display: inline-flex; align-items: center; gap: .4rem; margin-top: .8rem; font-weight: 500; color: var(--accent-2); }
 .card__go i { font-style: normal; transition: transform .4s var(--ease); }
 .card:hover .card__go i { transform: translate(3px, -3px); }
 @media (min-width: 900px) {
   .stack { gap: 0; }
-  .card { position: sticky; top: calc(5rem + var(--i) * .9rem); grid-template-columns: 7fr 5fr; height: min(72vh, 40rem); margin-bottom: 2rem; box-shadow: 0 -20px 60px -30px rgba(0,0,0,.8); }
+  .stack { max-width: 72rem; margin-inline: auto; }
+  .card { position: sticky; top: calc(5.5rem + var(--i) * .8rem); grid-template-columns: 7fr 5fr; height: clamp(20rem, 54vh, 30rem); margin-bottom: 1.5rem; box-shadow: 0 -20px 60px -30px rgba(0,0,0,.8); }
   .card__media { aspect-ratio: auto; height: 100%; }
-  .card__body { padding: 2.2rem; align-content: space-between; }
+  .card__body { padding: 1.8rem 2rem; align-content: space-between; }
   .stack::after { content: ""; display: block; height: 10vh; }
 }
 
