@@ -7,14 +7,15 @@
    scroll (lifts, shrinks and rolls away as the hero leaves).
    Purple on near-black.
    ========================================================= */
-import * as THREE from "three";
+/* Classic (non-module) script so it also runs from a file:// double-click. */
+const THREE = window.THREE;
 
 const canvas = document.getElementById("hero-canvas");
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isMobile = window.matchMedia("(max-width: 767px)").matches;
 const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-if (canvas && !reduce) {
+if (canvas && THREE && !reduce) {
   /* ---------- Renderer / camera ---------- */
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
