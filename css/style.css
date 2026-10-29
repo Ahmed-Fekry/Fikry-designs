@@ -140,14 +140,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: non
 
 #menu {
   position: fixed; inset: 0; z-index: 70; background: rgba(8,7,13,.92); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  display: grid; grid-template-rows: 1fr auto; padding: calc(var(--gutter) + 4rem) var(--gutter) var(--gutter);
+  display: grid; grid-template-rows: 1fr auto; padding: calc(var(--gutter) + 3rem) var(--gutter) var(--gutter); overflow-y: auto;
   clip-path: inset(0 0 100% 0); visibility: hidden; transition: clip-path .9s var(--ease-io), visibility 0s .9s;
 }
 #menu.open { clip-path: inset(0 0 0% 0); visibility: visible; transition: clip-path .9s var(--ease-io); }
 .menu-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: center; gap: .1em; }
 .menu-list a {
   display: flex; align-items: baseline; gap: 1rem;
-  font-family: var(--display); font-weight: 800; font-size: clamp(2.6rem, 9vw, 7rem); line-height: 1; letter-spacing: -.03em;
+  font-family: var(--display); font-weight: 800; font-size: min(clamp(2.6rem, 9vw, 7rem), 9vh); line-height: .95; letter-spacing: -.03em;
   color: var(--ink); transition: color .3s, padding-left .5s var(--ease);
 }
 .menu-list a::before { content: attr(data-i); font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; color: var(--accent-2); font-weight: 400; }
