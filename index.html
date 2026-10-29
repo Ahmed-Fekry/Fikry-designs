@@ -332,7 +332,6 @@
     const SOCIAL = [
       { name: "Behance", url: "https://www.behance.net/ahmed-fikry" },
       { name: "LinkedIn", url: "http://linkedin.com/in/ahmed-fikry/" },
-      { name: "Instagram", url: "https://instagram.com/medo.fikry" },
     ];
     const socialHTML = SOCIAL.map(s => `<a href="${s.url}" target="_blank" rel="noopener" class="magnetic">${s.name} <i>↗</i></a>`).join("");
     ["social-row", "menu-social"].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = socialHTML; });
