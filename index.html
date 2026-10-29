@@ -5,11 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ahmed Fikry — Designer of brands, motion and interfaces</title>
-  <meta name="description" content="Ahmed Fikry is a multidisciplinary designer in Cairo. Brand identity, motion graphics and UI/UX that people remember." />
+  <meta name="description" content="Ahmed Fikry is a multidisciplinary designer in Cairo and co-founder of Paycoo. Brand identity, motion graphics and UI/UX that people remember." />
   <meta name="author" content="Ahmed Fikry" />
   <link rel="canonical" href="https://fikry-designs.vercel.app/" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
-  <meta name="keywords" content="Ahmed Fikry, Ahmed Fikry designer, Ahmed Fikry portfolio, graphic designer Cairo, motion designer Egypt, UI/UX designer Cairo, brand identity designer" />
+  <meta name="keywords" content="Ahmed Fikry, Ahmed Fikry designer, Ahmed Fikry portfolio, Ahmed Fikry Paycoo, Paycoo co-founder, Paycoo designer, graphic designer Cairo, motion designer Egypt, UI/UX designer Cairo, brand identity designer" />
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://fikry-designs.vercel.app/" />
@@ -27,22 +27,59 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Ahmed Fikry",
-    "alternateName": ["Ahmed Fekry", "Fikry Designs"],
-    "url": "https://fikry-designs.vercel.app/",
-    "image": "https://fikry-designs.vercel.app/assets/images/personal%20image.jpg",
-    "jobTitle": "Multidisciplinary Designer",
-    "description": "Brand identity, motion graphics and UI/UX designer based in Cairo, Egypt.",
-    "email": "mailto:ahmedfikry277@gmail.com",
-    "telephone": "+201064368435",
-    "address": { "@type": "PostalAddress", "addressLocality": "Cairo", "addressCountry": "EG" },
-    "knowsAbout": ["Brand identity", "Motion graphics", "UI/UX design", "Graphic design", "Video editing", "Art direction"],
-    "worksFor": { "@type": "Organization", "name": "Paycoo", "url": "https://paycoo.app" },
-    "sameAs": [
-      "https://www.behance.net/ahmed-fikry",
-      "https://www.linkedin.com/in/ahmed-fikry/",
-      "https://github.com/Ahmed-Fekry"
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://fikry-designs.vercel.app/#ahmed-fikry",
+        "name": "Ahmed Fikry",
+        "alternateName": ["Ahmed Fekry", "Fikry Designs"],
+        "url": "https://fikry-designs.vercel.app/",
+        "image": "https://fikry-designs.vercel.app/assets/images/personal%20image.jpg",
+        "jobTitle": "Co-Founder & Product Designer",
+        "description": "Multidisciplinary designer based in Cairo, Egypt. Co-founder and product designer at Paycoo. Brand identity, motion graphics and UI/UX.",
+        "email": "mailto:ahmedfikry277@gmail.com",
+        "telephone": "+201064368435",
+        "address": { "@type": "PostalAddress", "addressLocality": "Cairo", "addressCountry": "EG" },
+        "knowsAbout": ["Brand identity", "Motion graphics", "UI/UX design", "Product design", "Graphic design", "Video editing", "Art direction"],
+        "worksFor": { "@id": "https://paycoo.app/#organization" },
+        "affiliation": { "@id": "https://paycoo.app/#organization" },
+        "hasOccupation": [
+          { "@type": "Occupation", "name": "Product Designer" },
+          { "@type": "Occupation", "name": "Multimedia Designer" }
+        ],
+        "sameAs": [
+          "https://www.behance.net/ahmed-fikry",
+          "https://www.linkedin.com/in/ahmed-fikry/",
+          "https://github.com/Ahmed-Fekry",
+          "https://paycoo.app"
+        ]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://paycoo.app/#organization",
+        "name": "Paycoo",
+        "url": "https://paycoo.app",
+        "description": "Digital wallet app. Brand, product design and UX by Ahmed Fikry.",
+        "founder": { "@id": "https://fikry-designs.vercel.app/#ahmed-fikry" },
+        "employee": { "@id": "https://fikry-designs.vercel.app/#ahmed-fikry" },
+        "location": { "@type": "Place", "address": { "@type": "PostalAddress", "addressLocality": "Cairo", "addressCountry": "EG" } }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://fikry-designs.vercel.app/#website",
+        "url": "https://fikry-designs.vercel.app/",
+        "name": "Ahmed Fikry — Portfolio",
+        "author": { "@id": "https://fikry-designs.vercel.app/#ahmed-fikry" },
+        "inLanguage": "en"
+      },
+      {
+        "@type": "CreativeWork",
+        "name": "Paycoo — Digital Wallet",
+        "url": "https://paycoo.app",
+        "creator": { "@id": "https://fikry-designs.vercel.app/#ahmed-fikry" },
+        "publisher": { "@id": "https://paycoo.app/#organization" },
+        "about": "Product design, UX strategy and visual identity for the Paycoo digital wallet."
+      }
     ]
   }
   </script>
@@ -284,7 +321,7 @@
           <span class="ledger__when mono">2023 — Now</span>
           <div class="ledger__what">
             <h3>Co-Founder &amp; Product Designer</h3>
-            <span class="ledger__co">Paycoo · Digital wallet</span>
+            <span class="ledger__co"><a href="https://paycoo.app" target="_blank" rel="noopener">Paycoo</a> · Digital wallet</span>
           </div>
           <p class="ledger__desc muted">Led product design, UX strategy and the full visual identity from scratch. Beta retention 60% above competitors.</p>
         </li>
