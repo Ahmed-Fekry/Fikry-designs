@@ -40,17 +40,25 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
+  <!-- Lenis smooth scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body class="antialiased">
-  <!-- Backgrounds -->
+  <!-- Backgrounds: WebGL aurora, CSS mesh fallback, film grain -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
   <div class="mesh-bg"></div>
   <div class="noise"></div>
+
+  <!-- Scroll progress -->
+  <div id="progress" aria-hidden="true"></div>
 
   <!-- Custom cursor -->
   <div class="cursor-dot"></div>
   <div class="cursor-ring"></div>
+  <div id="cursor-label" aria-hidden="true"></div>
 
   <!-- Preloader -->
   <div id="preloader">
@@ -62,7 +70,7 @@
   </div>
 
   <!-- ================= NAV ================= -->
-  <nav id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+  <nav id="nav" class="fixed top-0 inset-x-0 z-50">
     <div class="max-w-7xl mx-auto px-5 lg:px-8">
       <div class="glass rounded-2xl mt-4 px-5 py-3 flex items-center justify-between">
         <a href="#home" class="font-display font-bold text-xl tracking-tight">
@@ -102,14 +110,12 @@
   <!-- ================= HERO ================= -->
   <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-28 pb-16">
     <!-- 3D canvas -->
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-      <div class="w-[min(92vw,820px)] h-[min(92vw,820px)] opacity-90">
-        <canvas id="hero-canvas" class="w-full h-full"></canvas>
-      </div>
+    <div class="absolute inset-0 pointer-events-none">
+      <canvas id="hero-canvas" class="w-full h-full block"></canvas>
     </div>
 
     <!-- Content -->
-    <div class="relative z-10 text-center px-5 max-w-4xl mx-auto">
+    <div class="hero-content relative z-10 text-center px-5 max-w-4xl mx-auto">
       <div class="hero-kicker kicker justify-center mb-6">Cairo, Egypt — Available for work</div>
 
       <h1 class="font-display font-bold leading-[0.95] tracking-tight text-[clamp(3rem,11vw,8rem)] hero-line">
@@ -131,14 +137,14 @@
         <a href="#contact" class="btn-primary magnetic">Hire me
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-        <a href="Ahmed-Fikry-CV.pdf" download class="btn-ghost magnetic">
+        <a href="Ahmed-Fikry-CV.pdf" download class="btn-ghost magnetic" data-cursor="PDF">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           Download CV
         </a>
       </div>
     </div>
 
-    <a href="#about" class="absolute bottom-7 left-1/2 -translate-x-1/2 text-xs muted flex flex-col items-center gap-2 tracking-widest uppercase">
+    <a href="#about" class="hero-scroll absolute bottom-7 left-1/2 -translate-x-1/2 text-xs muted flex flex-col items-center gap-2 tracking-widest uppercase">
       Scroll
       <span class="block w-px h-10 bg-gradient-to-b from-purple-500 to-transparent animate-pulse"></span>
     </a>
@@ -171,8 +177,8 @@
       <div class="grid lg:grid-cols-12 gap-12 items-center">
         <!-- Portrait -->
         <div class="lg:col-span-5 reveal">
-          <div class="relative mx-auto max-w-sm">
-            <div class="absolute -inset-3 rounded-[2rem] border border-white/10 animate-[spin_28s_linear_infinite]"></div>
+          <div class="portrait tilt relative mx-auto max-w-sm" data-tilt="10">
+            <div class="portrait__ring absolute -inset-3 rounded-[2rem] border border-white/10 animate-[spin_28s_linear_infinite]"></div>
             <div class="relative rounded-[1.75rem] overflow-hidden panel aspect-[4/5] grid place-items-center">
               <!-- Personal photo; falls back to the AF monogram if missing -->
               <img src="assets/images/personal%20image.jpg" alt="Ahmed Fikry"
@@ -182,7 +188,7 @@
                 <span class="font-display font-bold text-[7rem] grad-text">AF</span>
               </div>
             </div>
-            <div class="panel absolute -bottom-6 -right-4 px-5 py-4 rounded-2xl text-center w-40" data-parallax="-18">
+            <div class="portrait__badge panel absolute -bottom-6 -right-4 px-5 py-4 rounded-2xl text-center w-40" data-parallax="-18">
               <div class="text-3xl font-display font-bold text-purple-400"><span class="counter" data-target="4" data-suffix="+">0</span></div>
               <div class="text-xs muted mt-1">Years crafting<br />design</div>
             </div>
@@ -224,6 +230,7 @@
 
   <!-- ================= SERVICES ================= -->
   <section id="services" class="relative py-24 lg:py-32 bg-white/[0.015]">
+    <div class="ghost" data-dir="left" aria-hidden="true">SERVICES</div>
     <div class="max-w-7xl mx-auto px-5 lg:px-8">
       <div class="text-center max-w-2xl mx-auto reveal">
         <div class="kicker justify-center mb-5">What I do</div>
@@ -236,7 +243,7 @@
         <div class="tilt panel service-card p-8 rounded-2xl">
           <div class="tilt__inner">
             <span class="num">01</span>
-            <div class="w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
+            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
             </div>
             <h3 class="font-display text-xl font-semibold">UI / UX Design</h3>
@@ -246,7 +253,7 @@
         <div class="tilt panel service-card p-8 rounded-2xl">
           <div class="tilt__inner">
             <span class="num">02</span>
-            <div class="w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
+            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
             </div>
             <h3 class="font-display text-xl font-semibold">Brand Identity</h3>
@@ -256,7 +263,7 @@
         <div class="tilt panel service-card p-8 rounded-2xl">
           <div class="tilt__inner">
             <span class="num">03</span>
-            <div class="w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
+            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             </div>
             <h3 class="font-display text-xl font-semibold">Motion Graphics</h3>
@@ -266,7 +273,7 @@
         <div class="tilt panel service-card p-8 rounded-2xl">
           <div class="tilt__inner">
             <span class="num">04</span>
-            <div class="w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
+            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5zM2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
             </div>
             <h3 class="font-display text-xl font-semibold">Graphic Design</h3>
@@ -276,7 +283,7 @@
         <div class="tilt panel service-card p-8 rounded-2xl">
           <div class="tilt__inner">
             <span class="num">05</span>
-            <div class="w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
+            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
             </div>
             <h3 class="font-display text-xl font-semibold">Video Editing</h3>
@@ -286,7 +293,7 @@
         <div class="tilt panel service-card p-8 rounded-2xl">
           <div class="tilt__inner">
             <span class="num">06</span>
-            <div class="w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
+            <div class="ico w-12 h-12 rounded-xl grid place-items-center bg-purple-500/10 text-purple-300 mb-6">
               <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             </div>
             <h3 class="font-display text-xl font-semibold">Photography</h3>
@@ -299,6 +306,7 @@
 
   <!-- ================= EXPERIENCE ================= -->
   <section id="experience" class="relative py-24 lg:py-32">
+    <div class="ghost" data-dir="right" aria-hidden="true">CAREER</div>
     <div class="max-w-5xl mx-auto px-5 lg:px-8">
       <div class="text-center max-w-2xl mx-auto reveal">
         <div class="kicker justify-center mb-5">Career path</div>
@@ -375,13 +383,14 @@
 
   <!-- ================= WORK ================= -->
   <section id="work" class="relative py-24 lg:py-32 bg-white/[0.015]">
+    <div class="ghost" data-dir="left" aria-hidden="true">WORK</div>
     <div class="max-w-7xl mx-auto px-5 lg:px-8">
       <div class="flex flex-wrap items-end justify-between gap-6 reveal">
         <div>
           <div class="kicker mb-5">Selected work</div>
           <h2 class="reveal-head font-display font-semibold text-3xl md:text-5xl grad-text" style="background-size:200% 100%;">My work &amp; projects</h2>
         </div>
-        <a href="https://www.behance.net/ahmed-fikry" target="_blank" rel="noopener" class="btn-ghost magnetic">
+        <a href="https://www.behance.net/ahmed-fikry" target="_blank" rel="noopener" class="btn-ghost magnetic" data-cursor="Open ↗">
           Full Behance
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg>
         </a>
@@ -395,6 +404,7 @@
 
   <!-- ================= CONTACT ================= -->
   <section id="contact" class="relative py-24 lg:py-32">
+    <div class="ghost" data-dir="right" aria-hidden="true">CONTACT</div>
     <div class="max-w-7xl mx-auto px-5 lg:px-8">
       <div class="text-center max-w-2xl mx-auto reveal">
         <div class="kicker justify-center mb-5">Get in touch</div>
@@ -513,9 +523,10 @@
       { t: "Characters", c: "Illustration / Painting", url: "https://www.behance.net/gallery/86320371/Characters", img: "characters.png" },
     ];
     document.getElementById("workGrid").innerHTML = WORKS.map((w, i) => `
-      <a href="${w.url}" target="_blank" rel="noopener" class="work group">
+      <a href="${w.url}" target="_blank" rel="noopener" class="work group" data-cursor="View project ↗">
         <div class="work__bg" style="background-image:url('${/^https?:/.test(w.img) ? w.img : encodeURI('assets/images/' + w.img)}');background-size:cover;background-position:center;background-color:#15101f;"></div>
         <div class="work__veil"></div>
+        <div class="work__glare"></div>
         <span class="work__num">${String(i + 1).padStart(2, "0")}</span>
         <span class="work__arrow"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
         <div class="work__meta">
@@ -525,6 +536,7 @@
       </a>`).join("");
   </script>
 
+  <script src="js/bg.js"></script>
   <script type="module" src="js/scene.js"></script>
   <script src="js/main.js"></script>
 </body>
